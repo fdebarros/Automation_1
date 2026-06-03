@@ -112,7 +112,6 @@ run_interactive() {
     echo "=== file_swap.sh ==="
     echo ""
 
-    # mode
     echo "Select mode:"
     echo "  [1] swap       (default)"
     echo "  [2] dump-swap"
@@ -124,14 +123,11 @@ run_interactive() {
         *) MODE="swap" ;;
     esac
 
-    # dates
     prompt_dates "$MODE"
 
-    # prefix
     read -rp "Prefix [$DEFAULT_PREFIX]: " input
     PREFIX="${input:-$DEFAULT_PREFIX}"
 
-    # ext
     read -rp "Extension [$DEFAULT_EXT]: " input
     EXT="${input:-$DEFAULT_EXT}"
 
@@ -183,8 +179,8 @@ confirm_explicit() {
     local msg="$1"
     echo ""
     echo "⚠️  WARNING: $msg"
-    read -rp "Type YES to confirm: " input
-    if [[ "$input" != "YES" ]]; then
+    read -rp "Confirm [yes/YES]: " input
+    if [[ "$input" != "yes" && "$input" != "YES" ]]; then
         echo "Aborted."
         exit 0
     fi
@@ -246,7 +242,7 @@ run_swap() {
 
     if [[ "$AUTO_CONFIRM" == false ]]; then
         echo ""
-        read -rp "Confirm deletion of .old files and tmp cleanup? [y/N]: " CONFIRM
+        read -rp "Confirm deletion of .old files and tmp cleanup? [y/Y]: " CONFIRM
         [[ "$CONFIRM" != "y" && "$CONFIRM" != "Y" ]] && echo "Aborted. .old files kept in $DEST_DIR." && exit 0
     fi
 
@@ -362,13 +358,10 @@ run_delete() {
 # ============================================================
 # ENTRYPOINT
 # ============================================================
-
-# se nenhum arg foi passado, roda interativo
 if [[ ${#POSITIONAL[@]} -eq 0 && -z "$MODE" && -z "$PREFIX" && -z "$EXT" ]]; then
     run_interactive
 fi
 
-# fallback defaults
 [[ -z "$PREFIX" ]] && PREFIX="$DEFAULT_PREFIX"
 [[ -z "$EXT" ]]    && EXT="$DEFAULT_EXT"
 [[ -z "$MODE" ]]   && MODE="swap"
